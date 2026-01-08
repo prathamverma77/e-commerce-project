@@ -8,13 +8,15 @@ import Contactus from "./Contactus";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import ForgotPassword from "./auth/ForgotPassword";
- import Dashboard from "../pages/user/Dashboard";
- import AdminDashboard from "../pages/admin/AdminDashboard";
-import Adminroute from "../components/routes/AdminRoute"
+import Dashboard from "../pages/user/Dashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import Adminroute from "../components/routes/AdminRoute";
 import PrivateRoute from "../components/routes/AdminRoute";
-import CreateCategory from "../pages/admin/CreateCategory"
+import CreateCategory from "../pages/admin/CreateCategory";
 import CreateProduct from "./admin/CreateProduct";
 import Products from "./admin/Products";
+import UpdateProduct from "./admin/UpdateProduct";
+
 function App() {
   return (
     <>
@@ -30,22 +32,21 @@ function App() {
         <Route path="/forgotpassword" element={<ForgotPassword />} />
 
         <Route path="/dashboard" element={<PrivateRoute />}>
-           <Route path="user" element={<Dashboard />} /> 
+          <Route path="user" element={<Dashboard />} />
           {/* <Route path="user/orders" element={<Orders />} /> */}
           {/* <Route path="user/profile" element={<Profile />} /> */}
         </Route>
 
         <Route path="/dashboard" element={<Adminroute />}>
-           <Route path="admin" element={<AdminDashboard />} /> 
+          <Route path="admin" element={<AdminDashboard />} />
           <Route path="admin/create-category" element={<CreateCategory />} />
           <Route path="admin/create-product" element={<CreateProduct />} />
           {/* <Route path="admin/users" element={<Users />} /> */}
-          {/* <Route path="admin/product/:slug" element={<UpdateProduct />} /> */}
+          <Route path="admin/product/:slug" element={<UpdateProduct />} />
           <Route path="admin/products" element={<Products />} />
 
           {/* <Route path="admin/orders" element={<AdminOrders />} /> */}
         </Route>
-
       </Routes>
     </>
   );

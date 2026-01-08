@@ -5,9 +5,12 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
+
 const { Option } = Select;
+
 const CreateProduct = () => {
   const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -16,22 +19,29 @@ const CreateProduct = () => {
   const [quantity, setQuantity] = useState("");
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState(null);
+
+  // =====================
   // GET ALL CATEGORIES
+  // =====================
   const getAllCategories = async () => {
     try {
       const { data } = await axios.get("/api/v1/category/get-category");
       if (data?.success) {
-        setCategories(data?.categories);
+        setCategories(data.categories);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong in getting categories");
     }
   };
+
   useEffect(() => {
     getAllCategories();
   }, []);
-  // CREATE PRODUCT FUNCTION
+
+  // =====================
+  // CREATE PRODUCT
+  // =====================
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
@@ -42,15 +52,18 @@ const CreateProduct = () => {
       productData.append("quantity", quantity);
       productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.post(
+      productData.append("shipping", shipping);
+
+      const { data } = await axios.post(
         "/api/v1/product/create-product",
         productData
       );
-      if (data?.error) {
-        toast.error(data?.message);
-      } else {
+
+      if (data?.success) {
         toast.success("Product Created Successfully");
         navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message || "Failed to create product");
       }
     } catch (error) {
       console.log(error);
@@ -60,23 +73,24 @@ const CreateProduct = () => {
 
   return (
     <Layout title={"Create Product - Admin"}>
-      <div className="container-fluid m-3 p-3 deshboard">
+      <div className="container-fluid m-3 p-3 dashboard">
         <div className="row">
           <div className="col-md-3">
             <AdminMenu />
           </div>
+
           <div className="col-md-9">
             <h1>Create Product</h1>
+
             <div className="m-1 w-75">
+              {/* CATEGORY */}
               <Select
                 bordered={false}
                 placeholder="Select a category"
                 size="large"
                 showSearch
                 className="form-select mb-3"
-                onChange={(value) => {
-                  setCategory(value);
-                }}
+                onChange={(value) => setCategory(value)}
               >
                 {categories?.map((c) => (
                   <Option key={c._id} value={c._id}>
@@ -84,80 +98,89 @@ const CreateProduct = () => {
                   </Option>
                 ))}
               </Select>
+
+              {/* PHOTO */}
               <div className="mb-3">
                 <label className="btn btn-outline-secondary col-md-12">
                   {photo ? photo.name : "Upload Photo"}
                   <input
                     type="file"
-                    name="photo"
                     accept="image/*"
                     onChange={(e) => setPhoto(e.target.files[0])}
                     hidden
                   />
                 </label>
               </div>
-              <div className="mb-3">
-                {photo && (
-                  <div className="text-center">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt="product_photo"
-                      height={"200px"}
-                      className="img img-responsive"
-                    />
-                  </div>
-                )}
-              </div>
+
+              {photo && (
+                <div className="mb-3 text-center">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="product"
+                    height="200"
+                    className="img img-responsive"
+                  />
+                </div>
+              )}
+
+              {/* NAME */}
               <div className="mb-3">
                 <input
-                  type={name}
-                  placeholder="write a name"
+                  type="text"
+                  value={name}
+                  placeholder="Write product name"
                   className="form-control"
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
+
+              {/* DESCRIPTION */}
               <div className="mb-3">
                 <textarea
-                  type="text"
                   value={description}
-                  placeholder="write a description"
+                  placeholder="Write product description"
                   className="form-control"
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
+
+              {/* PRICE */}
               <div className="mb-3">
                 <input
                   type="number"
                   value={price}
-                  placeholder="write a price"
+                  placeholder="Write product price"
                   className="form-control"
                   onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
+
+              {/* QUANTITY */}
               <div className="mb-3">
                 <input
                   type="number"
                   value={quantity}
-                  placeholder="write a quantity"
+                  placeholder="Write product quantity"
                   className="form-control"
                   onChange={(e) => setQuantity(e.target.value)}
                 />
               </div>
+
+              {/* SHIPPING */}
               <div className="mb-3">
                 <Select
                   bordered={false}
                   placeholder="Select Shipping"
                   size="large"
-                  showSearch
                   className="form-select mb-3"
-                  onChange={(value) => {
-                    setShipping(value);
-                  }}
+                  onChange={(value) => setShipping(value)}
                 >
                   <Option value="0">No</Option>
                   <Option value="1">Yes</Option>
                 </Select>
               </div>
+
+              {/* BUTTON */}
               <div className="mb-3">
                 <button className="btn btn-primary" onClick={handleCreate}>
                   CREATE PRODUCT
@@ -170,4 +193,5 @@ const CreateProduct = () => {
     </Layout>
   );
 };
+
 export default CreateProduct;
