@@ -11,6 +11,7 @@ import {
   orderStatusController,
 } from "../controller/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
+import { productCountController, productFilterController, productListController } from "../controller/productController.js";
 
 const router = express.Router();
 
@@ -46,5 +47,14 @@ router.put(
   isAdmin,
   orderStatusController
 );
+
+//filter
+router.post("/product-filters", productFilterController);
+
+//product count 
+router.get("/product-count", productCountController)
+
+//product per page
+router.get("/product-per/:page", productListController)
 
 export default router;
