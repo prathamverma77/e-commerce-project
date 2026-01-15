@@ -48,13 +48,6 @@ router.put(
   orderStatusController
 );
 
-//filter
-router.post("/product-filters", productFilterController);
 
-//product count 
-router.get("/product-count", productCountController)
-
-//product per page
-router.get("/product-per/:page", productListController)
 
 export default router;
