@@ -1,16 +1,18 @@
 import { NavLink, Link } from "react-router-dom";
 import React from "react";
 import toast from "react-hot-toast";
-// import badge from "badge";
+import { Badge } from "antd";
 
 
 import { useAuth } from "../../context/auth";
+import { useCart } from "../../context/Cart";
 
 
 
 
 function Header() {
   const { auth, setAuth } = useAuth();
+  const [cart, setCart] = useCart();
 
   const handleLogout = () => {
   setAuth({
@@ -105,6 +107,12 @@ function Header() {
                   </li>
                 </>
               )}
+
+              <li className="nav-item"></li>
+              <Badge count={cart?.length} showZero>
+                <NavLink to="/cart" className="nav-link">Cart</NavLink>
+              </Badge>
+
             </div>
           </div>
         </div>
