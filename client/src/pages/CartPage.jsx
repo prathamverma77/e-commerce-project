@@ -6,16 +6,15 @@ import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { AiFillWarning } from "react-icons/ai";
 
 const CartPage = () => {
-  const {auth} = useAuth();
+  const { auth } = useAuth();
   const [cart, setCart] = useCart();
-  const navigate = useNavigate();
-
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   // =====================
   // TOTAL PRICE
   // =====================
@@ -54,9 +53,7 @@ const CartPage = () => {
   // =====================
   const getToken = async () => {
     try {
-      const { data } = await axios.get(
-        "/api/v1/product/braintree/token"
-      );
+      const { data } = await axios.get("/api/v1/product/braintree/token");
       setClientToken(data?.clientToken);
     } catch (error) {
       console.log(error);
@@ -186,27 +183,22 @@ const CartPage = () => {
               )}
 
               <div className="mt-2">
-                {!clientToken || !auth?.token || !cart?.length ? (
-                  ""
-                ) : (
+                {clientToken && auth?.token && cart.length > 0 && (
                   <>
                     <DropIn
                       options={{
                         authorization: clientToken,
-                        paypal: {
-                          flow: "vault",
-                        },
+                        paypal: { flow: "vault" },
                       }}
-                      onInstance={(instance) => setInstance(instance)}
+                      onInstance={(inst) => setInstance(inst)}
                     />
+
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary mt-2"
                       onClick={handlePayment}
-                      disabled={
-                        loading || !instance || !auth?.user?.address
-                      }
+                      disabled={loading || !instance || !auth?.user?.address}
                     >
-                      {loading ? "Processing ...." : "Make Payment"}
+                      {loading ? "Processing..." : "Make Payment"}
                     </button>
                   </>
                 )}
