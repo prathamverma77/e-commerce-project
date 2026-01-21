@@ -11,7 +11,6 @@ import {
   orderStatusController,
 } from "../controller/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
-import { productCountController, productFilterController, productListController } from "../controller/productController.js";
 
 const router = express.Router();
 

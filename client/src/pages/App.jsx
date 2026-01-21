@@ -18,6 +18,8 @@ import Products from "./admin/Products";
 import UpdateProduct from "./admin/UpdateProduct";
 import Profile from "./user/Profile";
 import Users from "./admin/Users";
+import AdminOrders from "./admin/AdminOrders";
+import Orders from "./user/Orders";
 
 function App() {
   return (
@@ -35,7 +37,7 @@ function App() {
 
         <Route path="/dashboard" element={<PrivateRoute />}>
           <Route path="user" element={<Dashboard />} />
-          {/* <Route path="user/orders" element={<Orders />} /> */}
+          <Route path="user/orders" element={<Orders />} />
           <Route path="user/profile" element={<Profile />} />
         </Route>
 
@@ -47,7 +49,7 @@ function App() {
           <Route path="admin/product/:slug" element={<UpdateProduct />} />
           <Route path="admin/products" element={<Products />} />
 
-          {/* <Route path="admin/orders" element={<AdminOrders />} /> */}
+          <Route path="admin/orders" element={<AdminOrders />} />
         </Route>
       </Routes>
     </>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "../components/Layouts/Layout";
 import { useCart } from "../context/Cart";
 import { useAuth } from "../context/auth";
@@ -6,15 +6,16 @@ import { useNavigate } from "react-router-dom";
 import DropIn from "braintree-web-drop-in";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { AiFillWarning } from "react-icons/ai";
 
 const CartPage = () => {
-  const { auth } = useAuth();
+  const {auth} = useAuth();
   const [cart, setCart] = useCart();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
+  const dropinContainerRef = useRef(null);
   const navigate = useNavigate();
+  
   // =====================
   // TOTAL PRICE
   // =====================
@@ -53,7 +54,9 @@ const CartPage = () => {
   // =====================
   const getToken = async () => {
     try {
-      const { data } = await axios.get("/api/v1/product/braintree/token");
+      const { data } = await axios.get(
+        "/api/v1/product/braintree/token"
+      );
       setClientToken(data?.clientToken);
     } catch (error) {
       console.log(error);
@@ -63,6 +66,30 @@ const CartPage = () => {
   useEffect(() => {
     getToken();
   }, [auth?.token]);
+
+  // =====================
+  // INITIALIZE DROP-IN
+  // =====================
+  useEffect(() => {
+    if (clientToken && dropinContainerRef.current && !instance) {
+      DropIn.create(
+        {
+          authorization: clientToken,
+          container: dropinContainerRef.current,
+          paypal: {
+            flow: "vault",
+          },
+        },
+        (error, inst) => {
+          if (error) {
+            console.error(error);
+          } else {
+            setInstance(inst);
+          }
+        }
+      );
+    }
+  }, [clientToken]);
 
   // =====================
   // HANDLE PAYMENT
@@ -108,8 +135,8 @@ const CartPage = () => {
           <div className="row">
             {/* CART ITEMS */}
             <div className="col-md-7 p-0 m-0">
-              {cart?.map((p) => (
-                <div className="row card flex-row" key={p._id}>
+              {cart?.map((p, index) => (
+                <div className="row card flex-row" key={index}>
                   <div className="col-md-4">
                     <img
                       src={`/api/v1/product/product-photo/${p._id}`}
@@ -183,22 +210,19 @@ const CartPage = () => {
               )}
 
               <div className="mt-2">
-                {clientToken && auth?.token && cart.length > 0 && (
+                {!clientToken || !auth?.token || !cart?.length ? (
+                  ""
+                ) : (
                   <>
-                    <DropIn
-                      options={{
-                        authorization: clientToken,
-                        paypal: { flow: "vault" },
-                      }}
-                      onInstance={(inst) => setInstance(inst)}
-                    />
-
+                    <div ref={dropinContainerRef} />
                     <button
-                      className="btn btn-primary mt-2"
+                      className="btn btn-primary"
                       onClick={handlePayment}
-                      disabled={loading || !instance || !auth?.user?.address}
+                      disabled={
+                        loading || !instance || !auth?.user?.address
+                      }
                     >
-                      {loading ? "Processing..." : "Make Payment"}
+                      {loading ? "Processing ...." : "Make Payment"}
                     </button>
                   </>
                 )}
