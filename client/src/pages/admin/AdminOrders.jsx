@@ -19,7 +19,7 @@ const AdminOrders = () => {
   ]);
   const [changeStatus, setChangeStatus] = useState("");
   const [orders, setOrders] = useState([]);
-  const [auth, setAuth] = useAuth();
+  const {auth, setAuth} = useAuth();
 
   const getOrders = async () => {
     try {
