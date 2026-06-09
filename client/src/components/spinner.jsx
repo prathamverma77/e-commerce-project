@@ -23,3 +23,6 @@ const Spinner = ({ path = "login" }) => {
 };
 
 export default Spinner;
+
+
+// this is to check the pr close thing thats all 
